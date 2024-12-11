@@ -1,0 +1,20 @@
+sudo apt-get update -y
+sudo apt-get install -y mysql-server
+sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'password';"
+sudo mysql -u root -p'password' -e "UPDATE mysql.user SET host = '%' WHERE user = 'root' AND host = 'localhost';"
+sudo mysql -u root -p'password' -e "FLUSH PRIVILEGES;"
+sudo systemctl enable mysql
+sudo systemctl start mysql
+sudo apt-get install -y wget unzip
+sudo wget https://downloads.mysql.com/docs/sakila-db.zip -O /tmp/sakila-db.zip
+sudo unzip /tmp/sakila-db.zip -d /tmp
+sudo mysql -u root -p'password' -e "SOURCE /tmp/sakila-db/sakila-schema.sql;SOURCE /tmp/sakila-db/sakila-data.sql;"
+sudo apt-get install sysbench -y
+sudo sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-db=sakila --mysql-user="root" --mysql-password="password" prepare
+sudo sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-db=sakila --mysql-user="root" --mysql-password="password" run > BENCHMARK_FILE_VAR
+sudo sed -i '/\[mysqld\]/a server-id=SLAVE_ID_VAR\nrelay_log=relay-bin' /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo sed -i 's/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo systemctl restart mysql
+sudo mysql -u root -p'password' -e "CHANGE MASTER TO MASTER_HOST='MASTER_IP_VAR', MASTER_USER='replica_user', MASTER_PASSWORD='replica_password', MASTER_LOG_FILE='LOG_FILE_VAR', MASTER_LOG_POS=LOG_POS_VAR, MASTER_SSL=0;"
+sudo mysql -u root -p'password' -e "START SLAVE;"
+sudo mysql -u root -p'password' -e "SHOW SLAVE STATUS\G" > W_NODESTATUS_FILE_VAR

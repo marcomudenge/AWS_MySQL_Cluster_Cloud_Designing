@@ -1,0 +1,11 @@
+sudo apt-get update -y
+sudo apt-get install -y python3-pip
+sudo apt install -y python3-pymysql python3-uvicorn python3-fastapi
+sudo chmod +x ~/logic/proxy_logic.py
+export PORT=8000 
+export MASTER_IP=MASTER_IP_VAR 
+export SLAVE_1_IP=SLAVE_1_IP_VAR 
+export SLAVE_2_IP=SLAVE_2_IP_VAR 
+export MYSQL_USER=root 
+export MYSQL_PASSWORD=password 
+PORT=8000 MASTER_IP=MASTER_IP_VAR SLAVE_1_IP=SLAVE_1_IP_VAR SLAVE_2_IP=SLAVE_2_IP_VAR MYSQL_USER=root MYSQL_PASSWORD=password python3 ~/logic/proxy_logic.py > fastapi.log 2>&1 &

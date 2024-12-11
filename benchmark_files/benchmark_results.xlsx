@@ -1,0 +1,3 @@
+Implementation;Execution Time;Read Dispersion;Read Success Rate;Write Success Rate
+direct_hit;191.28751730918884;{'master': 1000};1.0;1.0
+random;183.15409588813782;{'worker1': 479, 'worker2': 521};1.0;1.0
